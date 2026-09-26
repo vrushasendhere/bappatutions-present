@@ -28,6 +28,18 @@ export interface SlideModel {
 }
 
 /**
+ * Passed to a slide template only when it should render as the editor —
+ * present mode and a download never pass this, so a template with `edit`
+ * undefined renders exactly as it always has. Its presence is what turns a
+ * heading, a bullet or a picture from plain content into something a
+ * teacher clicks and types into directly — see components/editor/Editable.
+ */
+export interface SlideEditHandlers {
+  onChangeContent(patch: Partial<SlideContent>): void;
+  onChooseImage(): void;
+}
+
+/**
  * The Up/Down "build" order for a slide — one element revealed per press.
  *
  * v1 derives a fixed order from the content shape itself rather than letting

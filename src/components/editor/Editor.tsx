@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { api, adoptAnonFromQuery } from '../../lib/client';
 import { downloadDeck } from '../../lib/download';
 import { fetchMe, finishPendingClaim, keepDeck, signIn, type KeepResult, type Me } from '../../lib/auth';
-import type { SlideContent, SlideModel, TemplateKey } from '../../lib/slides';
+import type { SlideContent, SlideModel } from '../../lib/slides';
 import { TEMPLATE_INFO, THEMES, LIMITS } from '../../lib/templates';
 import SlideRenderer from '../slides/SlideRenderer';
 import Account from '../Account';
 import SlideList from './SlideList';
-import SlideForm from './SlideForm';
+import SlideToolbar from './SlideToolbar';
 import ImagePicker from './ImagePicker';
 import LibraryPanel, { type LibraryFields } from './LibraryPanel';
 
@@ -364,27 +364,35 @@ export default function Editor({ id }: { id: string }) {
 
         <main class="editor__stage">
           <div class="editor__frame">
-            <SlideRenderer slide={slide} theme={deck.theme} revealedCount={Infinity} />
+            <SlideRenderer
+              slide={slide}
+              theme={deck.theme}
+              revealedCount={Infinity}
+              edit={{
+                onChangeContent: (patch: Partial<SlideContent>) =>
+                  updateSelected((s) => ({ ...s, content: { ...s.content, ...patch } })),
+                onChooseImage: () => setPicking(true),
+              }}
+            />
           </div>
+
+          <SlideToolbar
+            slide={slide}
+            presentationId={deck.id}
+            isAdmin={!!me?.user?.isAdmin}
+            onChangeTemplate={(key) =>
+              // Fields the new layout doesn't use are kept, so switching back
+              // loses nothing; fields it needs and doesn't have get a starter.
+              updateSelected((s) => ({ ...s, templateKey: key, content: { ...TEMPLATE_INFO[key].starter, ...s.content } }))
+            }
+            onChangeTransition={(transition) => updateSelected((s) => ({ ...s, transition }))}
+            onChangeSound={(key) => updateSelected((s) => ({ ...s, soundEffectR2Key: key ?? undefined }))}
+          />
+
           <p class="hint">
             Slide {index + 1} of {deck.slides.length}. In class, Next/Prev move between slides and ▲/▼ bring each part in one at a time.
           </p>
         </main>
-
-        <SlideForm
-          slide={slide}
-          presentationId={deck.id}
-          isAdmin={!!me?.user?.isAdmin}
-          onChangeSound={(key) => updateSelected((s) => ({ ...s, soundEffectR2Key: key ?? undefined }))}
-          onChangeContent={(patch: Partial<SlideContent>) => updateSelected((s) => ({ ...s, content: { ...s.content, ...patch } }))}
-          onChangeTemplate={(key: TemplateKey) =>
-            // Fields the new layout doesn't use are kept, so switching back
-            // loses nothing; fields it needs and doesn't have get a starter.
-            updateSelected((s) => ({ ...s, templateKey: key, content: { ...TEMPLATE_INFO[key].starter, ...s.content } }))
-          }
-          onChangeTransition={(transition) => updateSelected((s) => ({ ...s, transition }))}
-          onChooseImage={() => setPicking(true)}
-        />
       </div>
 
       {picking && (

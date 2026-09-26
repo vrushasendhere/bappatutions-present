@@ -158,10 +158,13 @@
 
 .hint { margin: 0.4rem 0; font-size: 0.82rem; color: var(--ed-soft); }
 
-/* ── three columns ───────────────────────────────────────────────────── */
+/* ── two columns: the slide list, and the slide itself ─────────────────
+   No third "details" column any more — a teacher edits by clicking
+   directly on the slide (see .editable below), not by filling in a form
+   beside it. */
 .editor__body {
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr) 320px;
+  grid-template-columns: 250px minmax(0, 1fr);
   min-height: 0;
 }
 
@@ -241,32 +244,141 @@
   overflow: hidden;
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.15);
 }
-/* The preview shows the whole slide at once — the one-part-at-a-time reveal
+/* The stage shows the whole slide at once — the one-part-at-a-time reveal
    is for presenting, not editing. */
 .editor__frame .slide__element { opacity: 1; transform: none; transition: none; }
-.editor__frame .slide__image-wrap:empty {
+
+/* ── click-to-edit text (Editable, src/components/editor/Editable.tsx) ──
+   A teacher edits by clicking the actual slide — these rules are what make
+   an ordinary heading/paragraph/bullet read as "click me" before they do,
+   and as "you're typing here" once they have. */
+.editable {
+  cursor: text;
+  border-radius: 6px;
+  outline: 2px dashed transparent;
+  outline-offset: 3px;
+  transition: outline-color 0.15s;
+}
+.editable:hover { outline-color: rgb(37 99 235 / 0.35); }
+.editable:focus {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 3px;
+  background: rgb(37 99 235 / 0.05);
+}
+.editable.is-empty:not(:focus)::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  font-weight: 400;
+  -webkit-text-stroke: 0; /* the funky theme outlines real text, not a hint */
+}
+
+/* ── click-to-change picture ─────────────────────────────────────────── */
+.editable-image {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 2cqmin;
+}
+.editable-image:hover .slide__image { filter: brightness(0.92); }
+.editable-image:focus-visible { outline: 3px solid var(--ed-accent); outline-offset: 3px; }
+.editable-image__hint {
+  display: grid;
+  place-items: center;
   min-height: 30cqh;
   min-width: 40cqw;
   border: 0.5cqmin dashed #cbd5e1;
   border-radius: 2cqmin;
-  display: grid;
-  place-items: center;
-}
-.editor__frame .slide__image-wrap:empty::after {
-  content: 'No picture yet';
   color: #94a3b8;
   font-size: 3cqmin;
+  font-weight: 700;
 }
+.editable-image:hover .editable-image__hint { border-color: var(--ed-accent); color: var(--ed-accent); }
+.editable-image { position: relative; }
+.editable-image__overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0.5cqmin 0;
+  background: rgb(17 24 39 / 0.72);
+  color: #fff;
+  font-size: 2.6cqmin;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.editable-image:hover .editable-image__overlay,
+.editable-image:focus-visible .editable-image__overlay { opacity: 1; }
 
-.editor__panel {
-  overflow-y: auto;
-  border-left: 2px solid var(--ed-line);
-  background: #fff;
-  padding: 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
+/* ── bullets, edited in place ────────────────────────────────────────── */
+.slide__bullet-row { display: flex; align-items: baseline; gap: 0.4em; }
+.slide__bullet-row .editable { flex: 1; min-width: 0; }
+.slide__bullet-remove {
+  flex: none;
+  border: 0;
+  background: none;
+  color: #9ca3af;
+  font-size: 0.75em;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+  padding: 0.2em 0.3em;
 }
+.slide__bullet-row:hover .slide__bullet-remove,
+.slide__bullet-row:focus-within .slide__bullet-remove { opacity: 1; }
+.slide__bullet-remove:hover { color: #ef4444; }
+.slide__bullet-add {
+  align-self: flex-start;
+  margin-top: 0.6rem;
+  border: 2px dashed var(--ed-line);
+  background: none;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ed-soft);
+  cursor: pointer;
+}
+.slide__bullet-add:hover { border-color: var(--ed-accent); color: var(--ed-accent); }
+
+/* ── the slim toolbar under the stage — layout, transition, sound ──────
+   Everything about a slide that isn't content a teacher clicks and types;
+   see src/components/editor/SlideToolbar.tsx. */
+.slide-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: #fff;
+  border: 2px solid var(--ed-line);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 1000px;
+  box-sizing: border-box;
+}
+.slide-toolbar__item { display: flex; flex-direction: column; gap: 0.25rem; }
+.slide-toolbar__item > span {
+  font-weight: 800;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ed-soft);
+}
+.slide-toolbar__item select {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--ed-line);
+  border-radius: 8px;
+  background: #fff;
+}
+.slide-toolbar__sound { flex: 1 1 14rem; min-width: 12rem; }
+.slide-toolbar__sound .field > span { font-size: 0.72rem; }
+.slide-toolbar__sound .field__audio { height: 32px; }
+
 .field { display: flex; flex-direction: column; gap: 0.3rem; border: 0; padding: 0; margin: 0; }
 .field > span,
 .field > legend { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ed-soft); padding: 0; }
@@ -290,8 +402,6 @@
 .field select:focus { outline: none; border-color: var(--ed-accent); }
 .field__thumb { max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 10px; background: var(--ed-bg); }
 .field__row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.bullet-row { display: flex; gap: 0.3rem; }
-.bullet-row button { flex: none; width: 2.2rem; border: 0; border-radius: 8px; background: var(--ed-bg); cursor: pointer; }
 
 /* ── picture picker ──────────────────────────────────────────────────── */
 .picker { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 1rem; }
@@ -351,6 +461,5 @@
   .editor { height: auto; min-height: 100dvh; }
   .editor__body { grid-template-columns: 1fr; }
   .editor__stage { order: -1; padding: 1rem; }
-  .editor__list,
-  .editor__panel { border: 0; border-top: 2px solid var(--ed-line); max-height: none; }
+  .editor__list { border: 0; border-top: 2px solid var(--ed-line); max-height: none; }
 }
