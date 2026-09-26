@@ -44,7 +44,7 @@
     {
       "binding": "DB",
       "database_name": "bappatutions-present",
-      "database_id": "PLACEHOLDER_UNTIL_D1_CREATE",
+      "database_id": "03e580d1-1b07-4e55-9baa-2a7bd3c85b5f",
       "migrations_dir": "migrations"
     }
   ],
