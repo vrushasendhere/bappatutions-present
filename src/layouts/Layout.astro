@@ -1,0 +1,28 @@
+---
+import '../styles/base.css';
+import '../styles/theme-classic.css';
+import '../styles/theme-funky.css';
+import '../styles/slide.css';
+import '../styles/player.css';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Deck ids are the share links, and the editor's URL can briefly carry an
+       anonymous id; neither should ride along to another site as a Referer
+       (library pictures load from bappatutions.in). -->
+  <meta name="referrer" content="same-origin" />
+  <title>{title} — BappaTutions Present</title>
+  <link rel="icon" href="/brand/favicon.png" type="image/png" />
+</head>
+<body>
+  <slot />
+</body>
+</html>

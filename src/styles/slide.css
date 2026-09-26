@@ -1,0 +1,127 @@
+/**
+ * Theme-agnostic slide chrome — layout and the brand mark, shared by every
+ * template regardless of which theme's custom properties are in effect.
+ *
+ * Every size here is in container units (cqw/cqh/cqmin), measured against
+ * whatever box the slide is drawn in — the player's stage, the editor's
+ * preview frame, an exported page. A slide therefore looks the same at any
+ * size; viewport units would have given a thumbnail full-screen-sized text.
+ * `cqmin` follows the shorter side, so a portrait phone scales by width and
+ * a projector by height.
+ */
+.slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2.4cqmin;
+  padding: 6cqh 6cqw;
+  background: var(--slide-bg);
+  color: var(--slide-ink);
+  font-family: var(--slide-font);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.slide__element {
+  opacity: 0;
+  transform: translateY(1.5cqmin);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.slide__element.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide__element { transition: none; }
+}
+
+.slide__heading {
+  margin: 0;
+  font-size: 7cqmin;
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--slide-accent);
+}
+.slide--title .slide__heading { font-size: 10cqmin; }
+.slide__body {
+  margin: 0;
+  font-size: 4.2cqmin;
+  line-height: 1.5;
+  color: var(--slide-ink-soft);
+  max-width: 60ch;
+}
+.slide--title .slide__body { margin-inline: auto; }
+.slide__bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqmin;
+}
+.slide__bullets li {
+  font-size: 4.4cqmin;
+  line-height: 1.35;
+  padding-left: 1.6em;
+  position: relative;
+}
+.slide__bullets li::before {
+  content: '●';
+  position: absolute;
+  left: 0;
+  color: var(--slide-accent-2);
+}
+.slide__image-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2cqmin;
+}
+.slide__image {
+  max-width: 100%;
+  max-height: 55cqh;
+  border-radius: var(--slide-radius);
+  object-fit: contain;
+  box-shadow: 0 1.2cqmin 3.5cqmin rgb(0 0 0 / 0.15);
+}
+.slide__caption {
+  margin: 0;
+  text-align: center;
+  font-size: 3cqmin;
+  color: var(--slide-ink-soft);
+}
+.slide--image-text {
+  flex-direction: row;
+  align-items: center;
+  gap: 5cqw;
+}
+.slide--image-text .slide__image-wrap { flex: 1 1 45%; }
+.slide--image-text .slide__text-col { flex: 1 1 55%; display: flex; flex-direction: column; gap: 2cqmin; }
+@container (orientation: portrait) {
+  .slide--image-text { flex-direction: column; }
+}
+
+/* The brand mark — structural, not part of the editable slide content, so
+ * there is nothing in the editor UI that removes it. See the plan's Present
+ * mode section. */
+.slide__brand {
+  position: absolute;
+  right: 2cqw;
+  bottom: 2cqh;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqmin;
+  opacity: 0.82;
+  pointer-events: none;
+  user-select: none;
+}
+.slide__brand img { height: 5cqmin; width: auto; }
+.slide__brand span {
+  font-family: var(--slide-font);
+  font-weight: 800;
+  font-size: 2.4cqmin;
+  color: var(--slide-ink);
+}

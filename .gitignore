@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+.dev.vars
+# built by scripts/build-export-player.mjs
+public/export/
+*.log

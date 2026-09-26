@@ -1,0 +1,7 @@
+/* A downloaded presentation's stylesheet: exactly the files the live player
+   page loads (see src/layouts/Layout.astro), bundled into one. */
+@import '../styles/base.css';
+@import '../styles/theme-classic.css';
+@import '../styles/theme-funky.css';
+@import '../styles/slide.css';
+@import '../styles/player.css';

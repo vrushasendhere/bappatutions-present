@@ -1,0 +1,93 @@
+---
+/**
+ * The gallery — the one page meant to be embedded in an iframe on
+ * bappatutions.in's Teachers page. Browsing and viewing only; Customize,
+ * Login, and Download all open in a new tab at this app's own origin (see
+ * the plan's Architecture section for why: Google refuses to render its
+ * OAuth screens inside an iframe at all, and cross-site storage for an
+ * embedded origin is unreliable across browsers).
+ */
+import { eq } from 'drizzle-orm';
+import Layout from '../layouts/Layout.astro';
+import { db } from '../db/client';
+import { presentations } from '../db/schema';
+
+const database = db(Astro.locals.runtime.env.DB);
+const decks = await database
+  .select()
+  .from(presentations)
+  .where(eq(presentations.isLibrary, true));
+---
+<Layout title="Presentation library">
+  <main class="gallery">
+    <div class="gallery__head">
+      <div>
+        <h1>Presentation library</h1>
+        <p class="gallery__lede">Pick a deck to present as-is, or open Customize to make it your own.</p>
+      </div>
+      <div class="gallery__top-actions">
+        <a class="gallery__mine" href="/mine" target="_blank" rel="noopener" data-pass-anon>My presentations</a>
+        <a class="gallery__btn gallery__btn--new" href="/edit/new" target="_blank" rel="noopener" data-pass-anon>+ Create new</a>
+      </div>
+    </div>
+
+    {decks.length === 0 && <p class="gallery__empty">No decks yet.</p>}
+
+    <ul class="gallery__grid">
+      {decks.map((deck) => (
+        <li class="gallery__card">
+          <strong>{deck.title}</strong>
+          {deck.subject && <span class="gallery__meta">{deck.subject} · Std {deck.standard}</span>}
+          <div class="gallery__actions">
+            <a class="gallery__btn gallery__btn--view" href={`/play/${deck.id}`}>View</a>
+            <a class="gallery__btn gallery__btn--edit" href={`/edit/${deck.id}`} target="_blank" rel="noopener" data-pass-anon>Customize</a>
+          </div>
+          <a class="gallery__download" href={`/download/${deck.id}`} target="_blank" rel="noopener" data-pass-anon>⬇ Download to use offline</a>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Layout>
+
+<script>
+  import { getAnonId } from '../lib/client';
+
+  // Customize and Create new open a new top-level tab, and the browser may
+  // give that tab different storage from this frame. Pass this frame's
+  // anonymous id along; the editor adopts it and strips it from the URL.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('a[data-pass-anon]');
+    if (!link) return;
+    const url = new URL(link.href);
+    url.searchParams.set('anon', getAnonId());
+    link.href = url.toString();
+  });
+</script>
+
+<style>
+  .gallery__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .gallery__head h1 { margin-bottom: 0.3rem; }
+  .gallery__top-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+  .gallery__mine { font-weight: 700; color: #2563eb; text-decoration: none; }
+  .gallery__btn--new { flex: none; background: #1f2937; color: #fff; padding: 0.6rem 1.2rem; }
+  .gallery { max-width: 960px; margin: 0 auto; padding: 2rem 1.2rem; }
+  .gallery__lede { color: #555; }
+  .gallery__empty { color: #888; font-style: italic; }
+  .gallery__grid {
+    list-style: none; margin: 1.5rem 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;
+  }
+  .gallery__card {
+    border: 2px solid #e5e0d5; border-radius: 16px; padding: 1rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .gallery__meta { font-size: 0.85rem; color: #777; }
+  .gallery__actions { display: flex; gap: 0.5rem; margin-top: auto; }
+  .gallery__btn {
+    flex: 1; text-align: center; padding: 0.5rem 0.7rem; border-radius: 999px;
+    text-decoration: none; font-weight: 700; font-size: 0.9rem;
+  }
+  .gallery__btn--view { background: #2563eb; color: #fff; }
+  .gallery__btn--edit { background: #f4f1ea; color: #1f2937; }
+  .gallery__download { font-size: 0.82rem; color: #555; text-align: center; }
+</style>

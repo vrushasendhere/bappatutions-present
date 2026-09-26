@@ -1,0 +1,10 @@
+---
+/** My presentations — rendered in the browser, since whose decks to list
+ *  depends on the session and anonymous id in this tab's storage. */
+import Layout from '../layouts/Layout.astro';
+import MyPresentations from '../components/MyPresentations';
+import '../styles/editor.css';
+---
+<Layout title="My presentations">
+  <MyPresentations client:only="preact" />
+</Layout>

@@ -1,0 +1,15 @@
+---
+/**
+ * The Customize editor. Rendered only in the browser: which deck to open —
+ * and whether to copy it first — depends on the anonymous id in this tab's
+ * localStorage, which the server can't see.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Editor from '../../components/editor/Editor';
+import '../../styles/editor.css';
+
+const { id } = Astro.params;
+---
+<Layout title="Customize">
+  <Editor client:only="preact" id={id!} />
+</Layout>

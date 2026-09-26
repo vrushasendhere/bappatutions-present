@@ -1,0 +1,57 @@
+{
+  // Cloudflare Worker config for the presentation tool — a real backend,
+  // unlike the main bappatutions.in site's pure static Pages deploy.
+  //
+  // `database_id` / bucket names below are filled in once `wrangler d1 create`
+  // and `wrangler r2 bucket create` have actually run (see the plan's
+  // Architecture section — same authenticated wrangler CLI the main site
+  // already uses). Nothing here is deployed or public until `npm run deploy`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bappatutions-present",
+  // Newer than this and the installed wrangler's local runtime refuses to
+  // start at all ("newest date supported by this server binary") — bump
+  // this only after confirming `wrangler --version` has caught up.
+  "compatibility_date": "2026-05-03",
+  "compatibility_flags": ["nodejs_compat"],
+  // worker/entry.ts wraps Astro's own dist/_worker.js/index.js — see that
+  // file for why (Astro's adapter has no way to add the cron handler below
+  // on its own). `assets.directory` is unchanged from pointing straight at
+  // Astro's output, so static asset routing behaves exactly as it did before.
+  "main": "./worker/entry.ts",
+  "assets": {
+    "directory": "./dist"
+  },
+  // Once a day, off the top of the hour — Cloudflare recommends avoiding :00
+  // since that's when every account's cron jobs tend to cluster.
+  "triggers": {
+    "crons": ["17 3 * * *"]
+  },
+  // Where the shared picture library lives. A local run overrides this in
+  // .dev.vars (gitignored) to point at the website's own dev server.
+  "vars": {
+    "LIBRARY_ORIGIN": "https://bappatutions.in",
+    // From the OAuth client in Google Cloud Console — public by design, so
+    // safe to commit. The client SECRET is not: `wrangler secret put
+    // GOOGLE_CLIENT_SECRET`.
+    "GOOGLE_CLIENT_ID": ""
+  },
+  // ADMIN_EMAILS is set as a secret, not here — `wrangler secret put
+  // ADMIN_EMAILS`. Comma-separated Google accounts that author the library,
+  // checked on every request (removing an address takes effect at once), but
+  // still a real person's email, so it doesn't belong in git history the way
+  // this file does. Read the same way as any other var, via env.ADMIN_EMAILS.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bappatutions-present",
+      "database_id": "PLACEHOLDER_UNTIL_D1_CREATE",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "bappa-present"
+    }
+  ]
+}

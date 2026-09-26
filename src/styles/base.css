@@ -1,0 +1,3 @@
+/* Page basics, shared by every page here and by a downloaded copy. */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Baloo 2', system-ui, sans-serif; }

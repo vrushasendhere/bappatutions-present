@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Player from '../../components/Player';
+import { db } from '../../db/client';
+import type { SlideModel } from '../../lib/slides';
+import { loadDeck } from '../../lib/decks';
+import { mediaUrl } from '../../lib/media';
+
+const { id } = Astro.params;
+const deck = await loadDeck(db(Astro.locals.runtime.env.DB), id!);
+
+// Expired temp decks read as not-found here even before anything deletes
+// them — see loadDeck.
+if (!deck) {
+  return new Response('This presentation does not exist, or its 2-day link has expired.', { status: 404 });
+}
+
+const slides = deck.slides as unknown as SlideModel[];
+const music = deck.backgroundMusicR2Key ? mediaUrl(deck.backgroundMusicR2Key) : undefined;
+---
+<Layout title={deck.title}>
+  <Player client:load slides={slides} theme={deck.theme} backgroundMusicUrl={music} />
+</Layout>

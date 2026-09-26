@@ -1,0 +1,78 @@
+.player {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+}
+.player:fullscreen { height: 100vh; }
+
+.player__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size; /* the slide sizes itself against this — see slide.css */
+}
+
+/* During a slide change the outgoing slide sits underneath and the incoming
+   one arrives on top of it. 0.45s here must match TRANSITION_MS in
+   Player.tsx, which removes the outgoing layer. */
+.player__layer { position: absolute; inset: 0; }
+.player__layer.is-entering { z-index: 1; }
+
+.t-fade.is-entering { animation: pl-fade-in 0.45s ease both; }
+.t-slide.is-entering.is-fwd { animation: pl-from-right 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.t-slide.is-leaving.is-fwd { animation: pl-to-left 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.t-slide.is-entering.is-back { animation: pl-from-left 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.t-slide.is-leaving.is-back { animation: pl-to-right 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes pl-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pl-from-right { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes pl-to-left { from { transform: none; } to { transform: translateX(-100%); } }
+@keyframes pl-from-left { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes pl-to-right { from { transform: none; } to { transform: translateX(100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .player__layer { animation: none !important; }
+}
+
+.player__controls {
+  position: absolute;
+  left: 50%;
+  bottom: 1.1rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  backdrop-filter: blur(6px);
+}
+.player__btn {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+}
+.player__btn:disabled { opacity: 0.35; cursor: default; }
+.player__btn--small { padding: 0.3rem 0.8rem; font-size: 0.85rem; }
+.player__btn--fullscreen { background: #fbbf24; }
+.player__stack { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.player__progress {
+  position: absolute;
+  right: 1rem;
+  top: 0.8rem;
+  margin: 0;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}

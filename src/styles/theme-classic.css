@@ -1,0 +1,16 @@
+/**
+ * Classic theme — colorful, professional. One of three (bappa, funky are the
+ * others); switched via `data-theme="classic"` on the slide's root element.
+ * Same "CSS custom properties per theme" pattern the main bappatutions.in
+ * site uses for its own brand tokens, just scoped to this app.
+ */
+[data-theme='classic'] {
+  --slide-bg: #ffffff;
+  --slide-bg-accent: #f4f1ea;
+  --slide-ink: #1f2937;
+  --slide-ink-soft: #4b5563;
+  --slide-accent: #2563eb;
+  --slide-accent-2: #d97706;
+  --slide-font: 'Baloo 2', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --slide-radius: 18px;
+}

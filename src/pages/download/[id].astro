@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DownloadPage from '../../components/DownloadPage';
+
+const { id } = Astro.params;
+---
+<Layout title="Download">
+  <DownloadPage client:only="preact" id={id!} />
+</Layout>
+
+<style is:global>
+  .dl { max-width: 34rem; margin: 0 auto; padding: 3rem 1.2rem; color: #1f2937; }
+  .dl__logo { height: 44px; width: auto; }
+  .dl h1 { margin: 1rem 0 0.6rem; }
+  .dl__ok { font-weight: 700; color: #15803d; }
+  .dl__error { font-weight: 700; color: #b45309; }
+  .dl__steps { line-height: 1.8; padding-left: 1.3rem; }
+  .dl__btn {
+    font: inherit; font-weight: 700; padding: 0.55rem 1.2rem; border: 0;
+    border-radius: 999px; background: #2563eb; color: #fff; cursor: pointer;
+  }
+</style>

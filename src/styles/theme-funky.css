@@ -1,0 +1,33 @@
+/**
+ * Funky theme — bold flat shapes, rounded cartoon type. One of three (classic,
+ * bappa are the others); switched via `data-theme="funky"` on the slide's
+ * root element. See theme-classic.css for the pattern this follows.
+ *
+ * Placeholder palette, built without the owner's own reference for this
+ * theme (see theme-bappa.css) — adjust the values here freely; nothing else
+ * needs to change.
+ */
+[data-theme='funky'] {
+  --slide-bg: #fffbea;
+  --slide-bg-accent: #fef08a;
+  --slide-ink: #1e1b4b;
+  --slide-ink-soft: #4c1d95;
+  --slide-accent: #f43f5e;
+  --slide-accent-2: #0ea5e9;
+  --slide-font: 'Baloo 2', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --slide-radius: 28px;
+}
+
+/* Flat theme touches beyond the shared custom properties: a thick playful
+   border and a bouncier bullet marker, scoped to this theme only so
+   classic/bappa are untouched. */
+[data-theme='funky'] .slide__heading {
+  -webkit-text-stroke: 1.5px var(--slide-ink);
+}
+[data-theme='funky'] .slide__image {
+  border: 6px solid var(--slide-ink);
+  box-shadow: 8px 8px 0 var(--slide-accent-2);
+}
+[data-theme='funky'] .slide__bullets li::before {
+  content: '★';
+}
