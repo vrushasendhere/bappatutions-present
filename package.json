@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run export:build && astro dev",
-    "build": "npm run export:build && astro build",
+    "build": "npm run export:build && astro build && node scripts/write-assetsignore.mjs",
     "export:build": "node scripts/build-export-player.mjs",
     "preview": "npm run build && wrangler dev",
     "db:generate": "drizzle-kit generate",
